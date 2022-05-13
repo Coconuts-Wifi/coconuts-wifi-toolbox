@@ -16,7 +16,7 @@ function submitReport()
   -- Retrieve hostname
   require("ccwSystem")
   local s = ccwSystem()
-  local hostname = s:property('hostname', 'PSM2-ALEX')
+  local hostname = s:property('hostname')
 
   -- Retrieve Server
   local server = s:property('server_toolbox')

@@ -9,10 +9,11 @@ on openWrt edit the `system` file
 $ vim /etc/config/system
 ```
 
-add a line `server_toolbox`
+add a line `server_toolbox` and `server_stats_key`
 
 ```
-$ option server_toolbox 'https://xxx.yyy.zzz'
+    option server_stats_key 'uuid of the core app server'
+    option server_toolbox 'https://xxx.yyy.zzz'
 ```
 
 ### Install
