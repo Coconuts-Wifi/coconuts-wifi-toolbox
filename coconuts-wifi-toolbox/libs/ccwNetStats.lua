@@ -40,6 +40,13 @@ end
 ========================================================
 --]]--
 
+function ccwNetStats._getMac(self)
+	--we assume each device will at least have an eth0            
+	io.input("/sys/class/net/eth0/address")
+	local mac = io.read("*line")
+	return mac
+end
+
 function ccwNetStats._getWifi(self)
 	self:log('Getting WiFi stats')
 	local w 	  = {}

@@ -12,7 +12,7 @@ $ vim /etc/config/system
 add a line `server_toolbox` and `server_stats_key`
 
 ```
-    option server_stats_key 'uuid of the core app server'
+    option server_toolbox_key 'uuid of the core app server'
     option server_toolbox 'https://xxx.yyy.zzz'
 ```
 
@@ -37,7 +37,8 @@ $ find ./coconuts-wifi-toolbox/ -type f | xargs -Ix sed -i.bak -r 's/\r//g' x
 $ find ./coconuts-wifi-toolbox/ -type f -name '*.bak' | xargs -Ix rm x
 
 Compress
-$ tar -czvf coconuts-wifi-toolbox.tar.gz ./coconuts-wifi-toolbox/
+$ cd coconuts-wifi-toolbox
+$ tar -czvf ../coconuts-wifi-toolbox.tar.gz ./coconuts-wifi-toolbox/
 
 Send
 $ scp ./coconuts-wifi-toolbox.tar.gz root@192.168.21.20:/tmp
@@ -46,8 +47,8 @@ Uncompress
 $ tar -xzvf /tmp/coconuts-wifi-toolbox.tar.gz -C /etc/
 
 change right
-$ chmod +x /etc/coconuts-wifi-toolbox/ccw*.lua
-$ chown root:root /etc/coconuts-wifi-toolbox/ccw*.lua
+$ chmod +x /etc/coconuts-wifi-toolbox/ccw*
+$ chown root:root /etc/coconuts-wifi-toolbox/ccw*
 
 
 $ /etc/coconuts-wifi-toolbox/ccwStatsAntenne.lua

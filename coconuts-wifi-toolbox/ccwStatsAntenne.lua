@@ -23,7 +23,7 @@ function submitReport()
   local query = server..'/core/rpc'
 
   -- Retrieve Server Key
-  local ssk = s:property('server_stats_key')
+  local ssk = s:property('server_toolbox_key')
 
   -- System info --
   require("ccwSystemStats")
@@ -63,7 +63,7 @@ function submitReport()
 
   --Remove old results
   os.remove(result_file)
-  os.execute('curl -o '..result_file..' -X POST -H "Content-Type: application/json" -d @'..new_json..' '..query)
+  os.execute('curl --insecure -o '..result_file..' -X POST -H "Content-Type: application/json" -d @'..new_json..' '..query)
 
 end
 
