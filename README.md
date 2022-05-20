@@ -27,7 +27,7 @@ copy the subfolder `coconuts-wifi-toolbox` in `~/openwrt/files/etc/` folder insi
 copy the subfolder `coconuts-wifi-toolbox` in `/etc/` folder of the antenna under Openwrt
 
 ```
-$ rm coconuts-wifi-toolbox.tar.gz
+$ rm ../coconuts-wifi-toolbox.tar.gz
 
 $ rm /tmp/coconuts-wifi-toolbox.tar.gz
 $ rm /etc/coconuts-wifi-toolbox -R
@@ -41,7 +41,7 @@ $ cd coconuts-wifi-toolbox
 $ tar -czvf ../coconuts-wifi-toolbox.tar.gz ./coconuts-wifi-toolbox/
 
 Send
-$ scp ./coconuts-wifi-toolbox.tar.gz root@192.168.21.20:/tmp
+$ scp ../coconuts-wifi-toolbox.tar.gz root@192.168.21.20:/tmp
 
 Uncompress
 $ tar -xzvf /tmp/coconuts-wifi-toolbox.tar.gz -C /etc/

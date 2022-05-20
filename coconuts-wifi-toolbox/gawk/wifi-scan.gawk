@@ -4,6 +4,7 @@ $1 == "BSS" {
     wifi[MAC]["enc"] = "Open"
 }
 $1 == "SSID:" {
+    if($2=="") $2 = "UNKNOWN"
     wifi[MAC]["SSID"] = $2
 }
 $1 == "freq:" {

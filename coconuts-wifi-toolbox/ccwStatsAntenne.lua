@@ -63,7 +63,7 @@ function submitReport()
 
   --Remove old results
   os.remove(result_file)
-  os.execute('curl --insecure -o '..result_file..' -X POST -H "Content-Type: application/json" -d @'..new_json..' '..query)
+  os.execute('curl --silent --insecure -o '..result_file..' -X POST -H "Content-Type: application/json" -d @'..new_json..' '..query)
 
 end
 
