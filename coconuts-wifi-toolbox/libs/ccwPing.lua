@@ -32,11 +32,11 @@ end
 ========================================================
 --]]--
 
-function ccwPing._ping(self, ip)
+function ccwPing._ping(self, address)
   local result = {}
 
-  print("Pinging "..ip)
-  local output = io.popen("ping -c 5 -i 1 -w 4 "..ip)
+  print("Pinging "..address)
+  local output = io.popen("ping -c 5 -i 1 -w 5 "..address)
   for line in output:lines() do
     local parsed_line
 

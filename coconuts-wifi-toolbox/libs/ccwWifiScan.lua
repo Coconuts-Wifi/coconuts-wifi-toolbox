@@ -28,6 +28,8 @@ end
 --]]--
 
 function ccwWifiScan._getNeighborhood(self, devname)
+  print("Scan Wifi "..devname)
+
 	local csv = self.external:getOutput("iw "..devname.." scan | gawk -f /etc/coconuts-wifi-toolbox/gawk/wifi-scan.gawk")
 
   local neighborhood = {}

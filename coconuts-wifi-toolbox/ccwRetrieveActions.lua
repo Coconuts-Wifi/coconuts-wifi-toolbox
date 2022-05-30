@@ -56,59 +56,78 @@ function retrieveActions()
   local hmac = sha.hmac(sha.sha256, ssk, hostname..'/'..strAction)
 
   --Treatment
-  -- local action = json.decode(strAction)
-  -- if(hmac == answer.result.signature)then
-  --   if(action.cmd == 'update')then
-  --     if(action.section == 'system')then
-  --       for k, v in pairs(action.data) do
-  --         print(k, v)
-  --         local res = s:property(k, v)
-  --         print(res)
-  --       end
-  --     end
-  --   end
-  -- end
-
-  --Treatment
   local a = json.decode(strAction)
   if(hmac == answer.result.signature)then
-    -- ccwActionCmd
+
+    --[[--
+    ========================
+    ===   ccwActionCmd   ===
+    ========================
+    --]]--
     if(a.action.uci == 'ccwActionCmd')then
-      -- if Reboot
-      if(a.action.data.cmd == 'reboot')then
-        -- call the server first (due to reboot)
-        local resp_data = '{ "jsonrpc":"2.0", "method":"antenna.update_action", "params": { "_id": "'..a.action_id..'", "success": true }, "id": 1}'
-        os.execute("curl --silent --insecure -X POST "..query.." -H 'Content-Type: application/json' -o "..resp_file.." -d '"..resp_data.."'")
-        print("echo REBOOT...")
-        os.execute("reboot")
-      end
+      local data = {}
 
       --  if Wifi scan
       if(a.action.data.cmd == 'wifi_scan')then
-        print("echo Scan Wifi...")
         require("ccwWifiScan")
         local ws = ccwWifiScan()
         local neighborhood = ws:_getNeighborhood('coconuts0')
         -- ws:_console(neighborhood)
-        local data = json.encode(neighborhood)
-        -- Send the result
-        local resp_data = '{ "jsonrpc":"2.0", "method":"antenna.update_action", "params": { "_id": "'..a.action_id..'", "success": true, "data": '..data..' }, "id": 1}'
-        os.execute("curl --silent --insecure -X POST "..query.." -H 'Content-Type: application/json' -o "..resp_file.." -d '"..resp_data.."'")
+        data = json.encode(neighborhood)
       end
 
       --  if Ping
       if(a.action.data.cmd == 'ping')then
-        print("Pinging "..a.action.data.options.ip)
+        local address = a.action.data.options._ip
         require("ccwPing")
         local ping = ccwPing()
-        local ping_result = ping:_ping(server)
+        local ping_result = ping:_ping(address)
 
-        local data = json.encode(ping_result)
-        -- Send the result
-        local resp_data = '{ "jsonrpc":"2.0", "method":"antenna.update_action", "params": { "_id": "'..a.action_id..'", "success": true, "data": '..data..' }, "id": 1}'
-        os.execute("curl --silent --insecure -X POST "..query.." -H 'Content-Type: application/json' -o "..resp_file.." -d '"..resp_data.."'")
+        data = json.encode(ping_result)
+      end
+
+      -- if Speedtest
+      if(a.action.data.cmd == 'speedtest')then
+        local address = a.action.data.options._address
+        local port = a.action.data.options._port
+        local length = a.action.data.options._length
+        require("ccwSpeed")
+        local speed = ccwSpeed()
+        local speed_result = speed:_iperf3(address, port, length)
+
+        data = json.encode(speed_result)
+      end
+
+      -- Send the result
+      local resp_data = '{ "jsonrpc":"2.0", "method":"antenna.update_action", "params": { "_id": "'..a.action_id..'", "success": true, "data": '..data..' }, "id": 1}'
+      os.execute("curl --silent --insecure -X POST "..query.." -H 'Content-Type: application/json' -o "..resp_file.." -d '"..resp_data.."'")
+
+      -- if Reboot
+      if(a.action.data.cmd == 'reboot')then
+        -- Send the result first and reboot
+        print("echo REBOOT...")
+        os.execute("reboot")
       end
     end
+
+    --[[--
+    =======================
+    ===   ccwWireless   ===
+    =======================
+    --]]--
+    if(a.action.uci == 'ccwWireless')then
+      -- update wifi-device
+      for k, v in pairs(a.action.data.wifiDevice) do
+        os.execute("uci set wireless.radio"..a.action.data.radio_number.."."..k.."="..v)
+      end
+      os.execute("uci commit wireless")
+      os.execute("wifi")
+
+      -- Send the result
+      local resp_data = '{ "jsonrpc":"2.0", "method":"antenna.update_action", "params": { "_id": "'..a.action_id..'", "success": true, "data": {} }, "id": 1}'
+      os.execute("curl --silent --insecure -X POST "..query.." -H 'Content-Type: application/json' -o "..resp_file.." -d '"..resp_data.."'")
+    end
+
   end
 end
 
