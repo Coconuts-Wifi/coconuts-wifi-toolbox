@@ -8,14 +8,10 @@ class "ccwSpeed"
 --Init function for object
 function ccwSpeed:ccwSpeed()
   require('ccwLogger')
-  require('ccwExternal');
-  require("ccwPing")
   local uci = require('uci')
 
   self.version = "0.0.1"
   self.debug = true
-  self.external	= ccwExternal()
-  self.ping = ccwPing()
   self.json = require("json")
   self.logger = ccwLogger()
   self.x = uci.cursor(nil,'/var/state')
@@ -43,19 +39,23 @@ function ccwSpeed._iperf3(self, address, port, length)
   print("Speedtest "..address.." port: "..port.." length: "..length.." sec")
 
   -- upload
-  result["upload"] = self.external.getOutput("iperf3 -c %s -p %s -t %s -4 -J" % { address, port, length })
-  -- local upload = io.popen("iperf3 -c %s -p %s -t %s -4 -J" % { address, port, length })
-  -- result["upload"] = upload:read("*a")
-  -- upload:close()
+  local upload = io.popen("iperf3 -c "..address.." -p "..port.." -t "..length.." -4 -J")
+  local upload_txt = upload:read("*a")
+  upload_txt = upload_txt.gsub(upload_txt,"\r?\n|\r","")
+  result["upload"] = json.decode(upload_txt)
+  upload:close()
   
   -- download
-  result["download"] = self.external.getOutput("iperf3 -c %s -p %s -t %s -4 -J -R" % { address, port, length })
-  -- local download = io.popen("iperf3 -c %s -p %s -t %s -4 -J -R" % { address, port, length })
-  -- result["download"] = upload:read("*a")
-  -- download:close()
+  local download = io.popen("iperf3 -c "..address.." -p "..port.." -t "..length.." -4 -J -R")
+  local download_txt = download:read("*a")
+  download_txt = download_txt.gsub(download_txt,"\r?\n|\r","")
+  result["download"] = json.decode(download_txt)
+  download:close()
 
   -- ping
-  result["ping"] = self.ping._ping(address)
+  require("ccwPing")
+  local ping = ccwPing()
+  result["ping"] = ping:_ping(address)
 
   return result
 end
