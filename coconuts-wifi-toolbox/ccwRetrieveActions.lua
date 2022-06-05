@@ -99,26 +99,30 @@ function retrieveActions()
       end
 
       -- if Reboot
-      if(a.action.data.cmd == 'reboot')then
-        -- Send the result first and reboot
+      if(a.action.data.cmd == 'reboot' or a.action.data.cmd == 'upgrade')then
+        -- Update case
+        if(a.action.data.cmd == 'upgrade')then
+          -- Retrieve firmware
+          os.execute("curl --silent --insecure -X GET "..server.."/core/public/"..a.action.data.options._firmware.." -H 'Content-Type: application/json' -o /tmp/"..a.action.data.options._firmware)
+        end
+
+        -- Send the result
         local resp_data = '{ "jsonrpc":"2.0", "method":"antenna.update_action", "params": { "_id": "'..a.action_id..'", "success": true }, "id": 1}'
         os.execute("curl --silent --insecure -X POST "..query.." -H 'Content-Type: application/json' -o "..resp_file.." -d '"..resp_data.."'")
 
-        print("echo REBOOT...")
-        os.execute("reboot")
-      else
-        -- Update
+        -- Update case
         if(a.action.data.cmd == 'upgrade')then
-          -- Retrieve firmware
-          os.execute("curl --silent --insecure -X GET "..server.."/core/public/"..a.action.data.options._firmware.." -H 'Content-Type: application/json' -o "..a.action.data.options._firmware..")
+          os.execute("sysupgrade -v /tmp/"..a.action.data.options._firmware)
+        -- Reboot case
+        else
+          print("echo REBOOT...")
+          os.execute("reboot")
         end
+
+      else
         -- Send the result
         local resp_data = '{ "jsonrpc":"2.0", "method":"antenna.update_action", "params": { "_id": "'..a.action_id..'", "success": true, "data": '..data..' }, "id": 1}'
         os.execute("curl --silent --insecure -X POST "..query.." -H 'Content-Type: application/json' -o "..resp_file.." -d '"..resp_data.."'")
-        -- Update
-        if(a.action.data.cmd == 'upgrade')then
-          os.execute("sysupgrade -v /tmp/"..a.action.data.options._firmware)
-        end
       end
     end
 
