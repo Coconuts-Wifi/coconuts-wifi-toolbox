@@ -55,6 +55,12 @@ function retrieveActions()
   local strAction = answer.result.action
   local hmac = sha.hmac(sha.sha256, ssk, hostname..'/'..strAction)
 
+  -- Check file function
+  function file_exists(name)
+    local f=io.open(name,"r")
+    if f~=nil then io.close(f) return true else return false end
+  end
+
   --Treatment
   local a = json.decode(strAction)
   if(hmac == answer.result.signature)then
