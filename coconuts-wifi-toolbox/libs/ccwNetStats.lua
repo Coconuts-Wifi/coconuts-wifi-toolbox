@@ -171,6 +171,7 @@ function ccwNetStats._getStations(self,interface)
 
         if(i == size_want_these)then
           table.insert(s, s_info)
+          s_info	= {}
         end
       end
     end
